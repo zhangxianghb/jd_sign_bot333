@@ -12,6 +12,10 @@ const KEY = process.env.JD_COOKIE;
 const serverJ = process.env.PUSH_KEY;
 const DualKey = process.env.JD_COOKIE_2;
 
+const AGENTID = process.env.AGENTID;
+const CORPID = process.env.CORPID;
+const CORPSECRET = process.env.CORPSECRET;
+
 
 async function downFile() {
     // const url = 'https://cdn.jsdelivr.net/gh/NobyDa/Script@master/JD-DailyBonus/JD_DailyBonus.js'
@@ -42,6 +46,41 @@ async function sendNotify(text, desp) {
     })
 }
 
+async function getAccessToken(corpid, corpsecret) {
+    var uri = 'https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=' + corpid + '&corpsecret=' + corpsecret;
+    return rp(uri).then(function (res) {
+        var json = JSON.parse(res)
+        return json.access_token;
+    }).catch(function (err) {
+        console.err(err);
+    });
+}
+
+async function sendNotifyWX(text, accessToken) {
+    const options = {
+        uri: 'https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=' + accessToken,
+        body: {
+            touser: '@all',
+            toparty: '@all',
+            totag: '@all',
+            msgtype: 'text',
+            agentid: AGENTID,
+            text: {
+                content: text
+            }
+        },
+        json: true,
+        method: 'POST'
+    }
+
+    await rp.post(options).then(res => {
+        console.log(res)
+    }).catch((err) => {
+        console.log(err)
+    })
+}
+
+
 async function start() {
     if (!KEY) {
         console.log('请填写 key 后在继续')
@@ -66,7 +105,15 @@ async function start() {
         var a = content.indexOf('【签到概览】')
         var b = content.indexOf('【其他总计】')
         var text = content.substring(a, b);
-        
+        console.log(text)
+        try {
+            let accesstoken = await getAccessToken(CORPID, CORPSECRET);
+            //去掉回车换行
+            var replace = content.substring(a, content.length)
+            await sendNotifyWX('淑芬：'+replace, accesstoken);
+        } catch (err) {
+            console.log(err)
+        }
         await sendNotify(text, content);
     }
 }
