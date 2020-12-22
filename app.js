@@ -111,7 +111,9 @@ async function start() {
             //去掉回车换行
             var replace = content.substring(a, content.length)
              replace = replace.substring(0, 120)
-             replace = replace + "... ..."
+             let datetime = new Date()
+            let dt = datetime.toLocaleString()
+            replace = replace + "... ..." + '\r\n' + dt
             await sendNotifyWX('淑芬：'+replace, accesstoken);
         } catch (err) {
             console.log(err)
