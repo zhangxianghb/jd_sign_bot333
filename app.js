@@ -107,14 +107,15 @@ async function start() {
         var text = content.substring(a, b);
         console.log(text)
         try {
+            let datetime = new Date();
+            let dt = datetime.toLocaleString();
+
             let accesstoken = await getAccessToken(CORPID, CORPSECRET);
             //去掉回车换行
             var replace = content.substring(a, content.length)
-             replace = replace.substring(0, 120)
-             let datetime = new Date()
-            let dt = datetime.toLocaleString()
-            replace = replace + "... ..." + '\r\n' + dt
-            await sendNotifyWX('淑芬：'+replace, accesstoken);
+            replace = replace.substring(0, 200)
+            replace = replace + " ... ..." + '\r\n' + dt
+            await sendNotifyWX(replace, accesstoken);
         } catch (err) {
             console.log(err)
         }
