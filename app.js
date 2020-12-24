@@ -113,9 +113,9 @@ async function start() {
             let accesstoken = await getAccessToken(CORPID, CORPSECRET);
             //去掉回车换行
             var replace = content.substring(a, content.length)
-            replace = replace.substring(0, 200)
+            replace = replace.substring(0, 180)
             replace = replace + " ... ..." + '\r\n' + dt
-            await sendNotifyWX(replace, accesstoken);
+            await sendNotifyWX("淑芬：\r\n"+replace, accesstoken);
         } catch (err) {
             console.log(err)
         }
